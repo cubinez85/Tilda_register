@@ -1,0 +1,14 @@
+[Unit]
+Description=Gunicorn instance to serve server_tilda
+After=network.target
+
+[Service]
+User=cubinez85
+Group=www-data
+WorkingDirectory=/var/www/server_tilda
+Environment="PATH=/var/www/server_tilda/venv/bin"
+ExecStart=/var/www/server_tilda/venv/bin/gunicorn --bind unix:ipc.sock -w 1 --timeout 120 wsgi:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
