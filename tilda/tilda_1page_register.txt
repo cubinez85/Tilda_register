@@ -1,0 +1,325 @@
+<style>
+  .auth-container {
+    max-width: 500px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+  }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #666;
+    border-bottom: 3px solid transparent;
+  }
+  .tab.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+  }
+  .form {
+    display: none;
+  }
+  .form.active {
+    display: block;
+  }
+  .auth-container label {
+    display: block;
+    margin: 12px 0 4px;
+    font-weight: bold;
+    color: #333;
+  }
+  .auth-container input,
+  .auth-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  .password-wrapper {
+    position: relative;
+  }
+  .password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 18px;
+    user-select: none;
+  }
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    font-weight: normal;
+    margin-top: 8px;
+  }
+  .auth-container input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+  }
+  .auth-container button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+  }
+  .auth-container button:hover {
+    background: #0056b3;
+  }
+  .message {
+    margin-top: 12px;
+    padding: 8px;
+    border-radius: 4px;
+    display: none;
+  }
+  .error {
+    background: #ffecec;
+    color: #d32f2f;
+  }
+  .success {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  .forgot-password {
+    text-align: center;
+    margin-top: 12px;
+  }
+  .forgot-password a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 14px;
+  }
+  .forgot-password a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="auth-container">
+  <div class="tabs">
+    <div class="tab active" data-tab="register">Регистрация</div>
+    <div class="tab" data-tab="login">Вход</div>
+  </div>
+
+  <!-- Форма регистрации -->
+  <form id="registerForm" class="form active">
+    <label for="reg_fullname">ФИО *</label>
+    <input type="text" id="reg_fullname" required>
+
+    <label for="reg_email">Электронная почта *</label>
+    <input type="email" id="reg_email" required>
+
+    <label for="reg_phone">Номер телефона</label>
+    <input type="tel" id="reg_phone">
+
+    <label for="reg_password">Пароль *</label>
+    <div class="password-wrapper">
+      <input type="password" id="reg_password" minlength="6" required>
+      <span class="password-toggle" onclick="togglePassword('reg_password')">????️</span>
+    </div>
+
+    <label for="reg_password_confirm">Подтверждение пароля *</label>
+    <div class="password-wrapper">
+      <input type="password" id="reg_password_confirm" minlength="6" required>
+      <span class="password-toggle" onclick="togglePassword('reg_password_confirm')">????️</span>
+    </div>
+
+    <label for="reg_birthdate">Дата рождения *</label>
+    <input type="date" id="reg_birthdate" required>
+
+    <label for="reg_gender">Пол</label>
+    <select id="reg_gender">
+      <option value="">— Выберите —</option>
+      <option value="male">Мужской</option>
+      <option value="female">Женский</option>
+      <option value="other">Другой</option>
+      <option value="prefer_not_to_say">Предпочитаю не указывать</option>
+    </select>
+
+    <div class="checkbox-label">
+      <input type="checkbox" id="reg_consent" required>
+      <label for="reg_consent">Я даю согласие на обработку персональных данных *</label>
+    </div>
+
+    <button type="submit">Зарегистрироваться</button>
+    <div id="registerMessage" class="message"></div>
+  </form>
+
+  <!-- Форма входа -->
+  <form id="loginForm" class="form">
+    <label for="login_email">Электронная почта *</label>
+    <input type="email" id="login_email" required>
+
+    <label for="login_password">Пароль *</label>
+    <div class="password-wrapper">
+      <input type="password" id="login_password" required>
+      <span class="password-toggle" onclick="togglePassword('login_password')">????️</span>
+    </div>
+
+    <button type="submit">Войти</button>
+
+    <div class="forgot-password">
+      <a href="https://project15827036.tilda.ws/forgot-password" target="_blank">Забыли пароль?</a>
+    </div>
+
+    <div id="loginMessage" class="message"></div>
+  </form>
+</div>
+
+<script>
+function togglePassword(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (field.type === "password") {
+    field.type = "text";
+  } else {
+    field.type = "password";
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  // Переключение вкладок
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+      tab.classList.add('active');
+      const formId = tab.dataset.tab + 'Form';
+      document.getElementById(formId).classList.add('active');
+    });
+  });
+
+  // Регистрация
+  document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msgEl = document.getElementById('registerMessage');
+    msgEl.style.display = 'none';
+
+    const fullname = document.getElementById('reg_fullname').value.trim();
+    const email = document.getElementById('reg_email').value.trim();
+    const phone = document.getElementById('reg_phone').value.trim() || '';
+    const password = document.getElementById('reg_password').value;
+    const passwordConfirm = document.getElementById('reg_password_confirm').value;
+    const birthdate = document.getElementById('reg_birthdate').value;
+    const gender = document.getElementById('reg_gender').value || null;
+    const consent = document.getElementById('reg_consent').checked;
+
+    if (!fullname || !email || !password || !passwordConfirm || !birthdate) {
+      showMsg(msgEl, 'Все обязательные поля должны быть заполнены.', 'error');
+      return;
+    }
+
+    if (!consent) {
+      showMsg(msgEl, 'Требуется согласие на обработку персональных данных.', 'error');
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      showMsg(msgEl, 'Пароли не совпадают.', 'error');
+      return;
+    }
+
+    if (password.length < 6) {
+      showMsg(msgEl, 'Пароль должен содержать не менее 6 символов.', 'error');
+      return;
+    }
+
+    const birthDate = new Date(birthdate);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
+    if (age < 13) {
+      showMsg(msgEl, 'Вам должно быть не менее 13 лет.', 'error');
+      return;
+    }
+
+    const payload = {
+      fullname,
+      email,
+      phone: phone || undefined,
+      password,
+      password_confirm: passwordConfirm,
+      birthdate,
+      gender: gender || undefined,
+      consent: "on"
+    };
+
+    try {
+      const res = await fetch('https://test-register-tilda.cubinez.ru/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+  showMsg(msgEl, 'Регистрация успешна! На ваш email отправлено подтверждение.', 'success');
+  // Перенаправление через 2 секунды
+  setTimeout(() => {
+    window.location.href = 'https://project15827036.tilda.ws/main';
+  }, 2000);
+  } else {
+        showMsg(msgEl, data.error || 'Неизвестная ошибка.', 'error');
+      }
+    } catch (err) {
+      showMsg(msgEl, 'Не удалось подключиться к серверу.', 'error');
+    }
+  });
+
+  // Вход
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msgEl = document.getElementById('loginMessage');
+    msgEl.style.display = 'none';
+
+    const email = document.getElementById('login_email').value.trim();
+    const password = document.getElementById('login_password').value;
+
+    if (!email || !password) {
+      showMsg(msgEl, 'Email и пароль обязательны.', 'error');
+      return;
+    }
+
+    const payload = { email, password };
+
+    try {
+      const res = await fetch('https://test-register-tilda.cubinez.ru/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+  showMsg(msgEl, 'Вход выполнен успешно!', 'success');
+  setTimeout(() => {
+    window.location.href = 'https://project15827036.tilda.ws/main';
+  }, 1500);
+  } else {
+        showMsg(msgEl, data.error || 'Неверный email или пароль.', 'error');
+      }
+    } catch (err) {
+      showMsg(msgEl, 'Не удалось подключиться к серверу.', 'error');
+    }
+  });
+
+  function showMsg(el, text, type) {
+    el.textContent = text;
+    el.className = 'message ' + type;
+    el.style.display = 'block';
+  }
+});
+</script>
