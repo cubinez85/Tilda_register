@@ -1,0 +1,58 @@
+sudo nano /etc/postfix/main.cf:
+
+mynetworks = 127.0.0.0/8 172.23.132.3/32 95.174.94.246 176.109.109.221 # добавь ip servser
+
+sudo nano /etc/postgresql/14/main/pg_hba.conf:
+
+замени блок # "local" is for Unix domain socket connections only
+
+на 
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     md5
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+
+
+
+sudo -u postgres psql
+
+CREATE USER tilda_user WITH PASSWORD 'hxMu6x9ivY';
+
+CREATE DATABASE tilda_db;
+
+GRANT ALL PRIVILEGES ON DATABASE tilda_db TO tilda_user;
+
+
+
+journalctl -u tilda_register.service -f
+
+http://test-register-tilda.cubinez.ru/
+
+
+
+# Для мониторинга в реальном времени
+sudo tail -f /var/log/nginx/error.log
+
+c внешней ip:   curl -v https://test-register-tilda.cubinez.ru/api/health  
+
+# С внешнего устройства:
+curl -v https://test-register-tilda.cubinez.ru/ 
+
+
+
+curl -X POST https://test-register-tilda.cubinez.ru/api/register \
+  -H "Content-Type: application/json" \
+  -H "Origin: https://project15827036.tilda.ws" \
+  -d '{
+    "fullname": "Тест из curl3",
+    "email": "cubinez85@mail.ru",
+    "password": "secure123",
+    "password_confirm": "secure123",
+    "birthdate": "1985-05-15",
+    "gender": "Мужской",
+    "consent": "on"
+  }'
+  
