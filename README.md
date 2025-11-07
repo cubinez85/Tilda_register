@@ -1,2 +1,2 @@
 # Tilda_register
-# ls settings.txt
+# ls /server_register/settings.txt
